@@ -16,10 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework import routers
+from GamesPlayApp.games_app.views import ProfileViewSet, GameViewSet
+
+router = routers.DefaultRouter()
+router.register(r"profile", ProfileViewSet)
+router.register(r"game", GameViewSet)
 
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("GamesPlayApp.games_app.urls")),
+    path("", include(router.urls)),
 ]

@@ -1,10 +1,20 @@
 from django.shortcuts import render, redirect
-
 from .forms import *
 from .models import Profile, Game
+from rest_framework import viewsets
+from .serializers import ProfileSerializer, GameSerializer
 
 
-# Create your views here.
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+
+class GameViewSet(viewsets.ModelViewSet):
+    queryset = Game.objects.all()
+    serializer_class = GameSerializer
+
+
 def get_profile():
     try:
         return Profile.objects.get()
@@ -77,7 +87,6 @@ def profile_delete(request):
     return render(request, 'profile/delete-profile.html')
 
 
-
 def game_dashboard(request):
     profile = get_profile()
     games = Game.objects.all()
@@ -139,6 +148,3 @@ def game_delete(request, pk):
         'game': game
     }
     return render(request, 'game/delete-game.html', context)
-
-
-
