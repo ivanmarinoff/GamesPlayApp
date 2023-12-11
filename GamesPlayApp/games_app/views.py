@@ -18,7 +18,7 @@ def index(request):
         'profile': profile,
     }
 
-    return render(request, 'base.html', context)
+    return render(request, 'common/home-page.html', context)
 
 
 def profile_create(request):

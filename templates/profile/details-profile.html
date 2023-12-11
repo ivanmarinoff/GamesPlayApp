@@ -8,10 +8,10 @@
             <div class="game-header">
                 <!-- default profile image (if the user does NOT have any)-->
                 {% if not profile.profile_picture %}
-                <img class="{% static 'images/default-user.jpg' %}" alt='no_profile-image'/>
+                <img class ="game-img" src="{% static 'images/default-user.jpg' %}" alt='no_profile-image' enctype="multipart/form-data"/>
                 {% else %}
                 <!-- if the user has a profile image -->
-                <img class="{{ profile.profile_picture }}" src="" alt='profile-image'/>
+                <img class ="game-img" src="{{ profile.profile_picture }}" alt='profile-image' enctype="multipart/form-data"/>
                 {% endif %}
                 <!-- user full name (if any) -->
                 <h1>{{ profile.get_full_name }}</h1>
