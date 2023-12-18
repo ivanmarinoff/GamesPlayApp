@@ -2,19 +2,19 @@ from django.urls import path, include
 from .views import *
 
 urlpatterns = [
-    path('', index, name='index'),
+    path('', IndexView.as_view(), name='index'),
     path('profile/', include([
-        path('create/', profile_create, name='profile-create'),
-        path('details/', profile_details, name='profile-details'),
-        path('edit/', profile_edit, name='profile-edit'),
-        path('delete/', profile_delete, name='profile-delete'),
-        path('dashboard/', game_dashboard, name='game-dashboard'),
+        path('create/', ProfileCreateView.as_view(), name='profile-create'),
+        path('details/', ProfileDetailsView.as_view(), name='profile-details'),
+        path('edit/', ProfileEditView.as_view(), name='profile-edit'),
+        path('delete/', ProfileDeleteView.as_view(), name='profile-delete'),
+        path('dashboard/', GameDashboardView.as_view(), name='game-dashboard'),
     ])),
 
     path('game/', include([
-        path('create/', game_create, name='game-create'),
-        path('details/<int:pk>/', game_details, name='game-details'),
-        path('edit/<int:pk>/', game_edit, name='game-edit'),
+        path('create/', GameCreateView.as_view(), name='game-create'),
+        path('details/<int:pk>/', GameDetailsView.as_view(), name='game-details'),
+        path('edit/<int:pk>/', GameEditView.as_view(), name='game-edit'),
         path('delete/<int:pk>/', game_delete, name='game-delete'),
     ]))
 ]

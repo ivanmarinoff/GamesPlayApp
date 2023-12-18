@@ -1,142 +1,103 @@
+from typing import Any
 from django.shortcuts import render, redirect
-from .forms import *
+from django.views import View
+from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Profile, Game
+from .forms import ProfileCreateForm, ProfileEditForm, GameCreateForm, GameEditForm, GameDeleteForm
 from rest_framework import viewsets
 from .serializers import ProfileSerializer, GameSerializer
-
+from django.views import generic as views
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
-
 class GameViewSet(viewsets.ModelViewSet):
     queryset = Game.objects.all()
     serializer_class = GameSerializer
 
+class IndexView(views.TemplateView):
+    template_name = 'common/home-page.html'
 
-def get_profile():
-    try:
-        return Profile.objects.get()
-    except Profile.DoesNotExist:
-        return None
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = Profile.objects.first()
+        return context
 
+class ProfileCreateView(views.CreateView):
+    model = Profile
+    form_class = ProfileCreateForm
+    template_name = 'profile/create-profile.html'
+    success_url = reverse_lazy('game-dashboard')
 
-def index(request):
-    profile = get_profile()
-    context = {
-        'profile': profile,
-    }
-
-    return render(request, 'common/home-page.html', context)
-
-
-def profile_create(request):
-    profile = get_profile()
-    form = ProfileCreateForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('game-dashboard')
-    context = {
-        'form': form,
-        'profile': profile,
-    }
-    return render(request, 'profile/create-profile.html', context)
-
-
-def profile_details(request):
-    profile = get_profile()
-    games_count = Game.objects.all().count()
-    rating_list = [game.rating for game in Game.objects.all()]
-    if rating_list:
-        average_rating = sum(rating_list) / len(rating_list)
+class ProfileDetailsView(views.View):
+    def get(self, request, *args, **kwargs):
+        profile = Profile.objects.first()
+        games_count = Game.objects.all().count()
+        rating_list = [game.rating for game in Game.objects.all()]
+        average_rating = sum(rating_list) / len(rating_list) if rating_list else 0.0
         average_rating = f'{average_rating:.1f}'
-    else:
-        average_rating = 0.0
-    context = {
-        'profile': profile,
-        'games_count': games_count,
-        'average_rating': average_rating,
-    }
-    return render(request, 'profile/details-profile.html', context)
+        context = {
+            'profile': profile,
+            'games_count': games_count,
+            'average_rating': average_rating,
+        }
+        return render(request, 'profile/details-profile.html', context)
 
+class ProfileEditView(views.UpdateView):
+    model = Profile
+    form_class = ProfileEditForm
+    template_name = 'profile/edit-profile.html'
+    success_url = reverse_lazy('profile-details')
 
-def profile_edit(request):
-    profile = get_profile()
-    form = ProfileEditForm(request.POST or None, instance=profile)
-    if form.is_valid():
-        form.save()
-        return redirect('profile-details')
-    context = {
-        'form': form,
-        'profile': profile,
+    def get_object(self, queryset=None):
+        # Ensure that the correct profile instance is retrieved based on your logic
+        return Profile.objects.first()
+    
+class ProfileDeleteView(views.DeleteView):
+    model = Profile
+    template_name = 'profile/delete-profile.html'
+    success_url = reverse_lazy('index')
 
-    }
-    return render(request, 'profile/edit-profile.html', context)
+    def get_object(self, queryset=None):
+        # Ensure that the correct profile instance is retrieved based on your logic
+        return Profile.objects.first()
 
+class GameDashboardView(views.TemplateView):
+    template_name = 'common/dashboard.html'
 
-def profile_delete(request):
-    profile = Profile.objects.first()
-    game = Game.objects.all()
-    if request.method == 'POST':
-        profile.delete()
-        game.delete()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = Profile.objects.first()
+        context['games'] = Game.objects.all()
+        return context
 
-        return redirect('index')
+class GameCreateView(views.CreateView):
+    model = Game
+    form_class = GameCreateForm
+    template_name = 'game/create-game.html'
+    success_url = reverse_lazy('game-dashboard')
 
-    return render(request, 'profile/delete-profile.html')
+class GameDetailsView(View):
+    def get(self, request, pk, *args, **kwargs):
+        profile = Profile.objects.first()
+        game = Game.objects.get(pk=pk)
+        context = {
+            'game': game,
+            'profile': profile,
+        }
+        return render(request, 'game/details-game.html', context)
 
-
-def game_dashboard(request):
-    profile = get_profile()
-    games = Game.objects.all()
-    context = {
-        'profile': profile,
-        'games': games,
-    }
-    return render(request, 'common/dashboard.html', context)
-
-
-def game_create(request):
-    profile = get_profile()
-    form = GameCreateForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('game-dashboard')
-    context = {
-        'form': form,
-        'profile': profile,
-    }
-    return render(request, 'game/create-game.html', context)
-
-
-def game_details(request, pk):
-    profile = get_profile()
-    game = Game.objects.filter(pk=pk).get()
-    context = {
-        'game': game,
-        'profile': profile,
-    }
-    return render(request, 'game/details-game.html', context)
-
-
-def game_edit(request, pk):
-    profile = get_profile()
-    game = Game.objects.filter(pk=pk).get()
-    form = GameEditForm(request.POST or None, instance=game)
-    if form.is_valid():
-        form.save()
-        return redirect('game-dashboard')
-    context = {
-        'form': form,
-        'profile': profile,
-        'game': game
-    }
-    return render(request, 'game/edit-game.html', context)
-
+class GameEditView(views.UpdateView):
+    model = Game
+    form_class = GameEditForm
+    template_name = 'game/edit-game.html'
+    success_url = reverse_lazy('game-dashboard')
 
 def game_delete(request, pk):
-    profile = get_profile()
+    profile = Profile.objects.first()
     game = Game.objects.filter(pk=pk).get()
     form = GameDeleteForm(request.POST or None, instance=game)
     if form.is_valid():
