@@ -1,14 +1,11 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
-    <!-- edit game section -->
-    <section id="create-page" class="auth">
-        <!-- edit game form -->
+
+    <section id="delete-page" class="auth">
         <form id="register" method="post" action="{% url 'game-edit' pk=game.pk %}">
             <div class="container">
-                <!-- Edit Game paragraph -->
                 <h1>Edit Game</h1>
                {{ form }}
-                <!-- edit game button -->
                 <input class="btn submit" type="submit" value="Edit Game">
                 {% csrf_token %}
             </div>
