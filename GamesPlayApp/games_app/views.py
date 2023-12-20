@@ -5,7 +5,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Profile, Game
-from .forms import ProfileCreateForm, ProfileEditForm, GameCreateForm, GameEditForm, GameDeleteForm
+from .forms import ProfileCreateForm, ProfileEditForm, GameCreateForm, GameEditForm, GameDeleteForm, ProfileDeleteForm
 from rest_framework import viewsets
 from .serializers import ProfileSerializer, GameSerializer
 from django.views import generic as views
@@ -58,6 +58,7 @@ class ProfileEditView(views.UpdateView):
     
 class ProfileDeleteView(views.DeleteView):
     model = Profile
+    form_class = ProfileDeleteForm
     template_name = 'profile/delete-profile.html'
     success_url = reverse_lazy('index')
 

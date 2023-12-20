@@ -6,13 +6,14 @@ from .models import Profile, Game
 class ProfileBaseForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['first_name', 'last_name', 'profile_picture', 'email', 'age', 'password']
+        exclude =['user']
 
 
 class ProfileCreateForm(ProfileBaseForm):
     class Meta:
         model = Profile
-        exclude = ['first_name', 'last_name', 'profile_picture']
+        exclude = ['first_name', 'last_name', 'profile_picture', 'user']
         widgets = {
             'password': forms.PasswordInput(),
         }
@@ -25,7 +26,7 @@ class ProfileEditForm(ProfileBaseForm):
 class ProfileDeleteForm(ProfileBaseForm):
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = None
         exclude = ['first_name', 'last_name', 'profile_picture', 'email', 'age', 'password']
 
         # def __init__(self, *args, **kwargs):
@@ -49,7 +50,8 @@ class ProfileDeleteForm(ProfileBaseForm):
 class GameBaseForm(forms.ModelForm):
     class Meta:
         model = Game
-        fields = '__all__'
+        fields = ['title', 'category', 'rating', 'max_level', 'image_url', 'summary']
+        exclude = ['id']
 
 
 class GameCreateForm(GameBaseForm):

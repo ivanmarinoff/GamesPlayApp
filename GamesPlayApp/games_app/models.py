@@ -1,9 +1,10 @@
+from email.policy import default
+from enum import auto, unique
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-
+import uuid
 
 class Profile(models.Model):
-
     email = models.EmailField(
         blank=False,
         null=False,
@@ -89,4 +90,9 @@ class Game(models.Model):
     summary = models.TextField(
         blank=True,
         null=True,
+    )
+    profile=models.ForeignKey(
+        Profile,
+        default=1,
+        on_delete=models.CASCADE,            
     )

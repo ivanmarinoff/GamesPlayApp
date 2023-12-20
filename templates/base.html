@@ -18,7 +18,7 @@
         <h1><a class="home" href="{% url 'index' %}">GamesPlay</a></h1>
         <nav>
 
-            {% if user %}
+            {% if profile %}
             <!-- if the user has not created a profile -->
             <a href="{% url 'game-dashboard' %}">Dashboard</a>
             <a href="{% url 'game-create' %}">Create Game</a>
