@@ -93,6 +93,7 @@ class Game(models.Model):
     )
     profile=models.ForeignKey(
         Profile,
-        default=1,
-        on_delete=models.CASCADE,            
+        related_name='games',
+        on_delete=models.CASCADE,
+        default=Profile.objects.first,
     )
